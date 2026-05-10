@@ -1,3 +1,19 @@
+/**
+ * Non-interactive `hunk pager` renderer for captured pager hosts.
+ *
+ * Hunk's normal pager integration is a full-screen interactive TUI: Git pipes patch text on stdin,
+ * and Hunk opens the controlling terminal for keyboard/mouse input. That works for `core.pager`,
+ * but tools such as LazyGit invoke custom pagers inside their own diff panel and advertise a
+ * constrained environment (notably `TERM=dumb`). Launching the TUI there either hangs, corrupts the
+ * host panel with alternate-screen control sequences, or leaves no usable diff output.
+ *
+ * This module is the fallback output adapter for those contexts. It intentionally reuses Hunk's
+ * normal parse/highlight/render planning stack (`loadAppBootstrap`, Pierre metadata,
+ * `loadHighlightedDiff`, and `buildStackRows`) and only serializes the resulting stack rows to ANSI
+ * text. Keep it as a thin adapter: do not introduce a second diff parser or a parallel review model
+ * here. If the static renderer cannot parse or render safely, callers fall back to the original patch
+ * text so pager pipelines keep working.
+ */
 import { loadAppBootstrap } from "../core/loaders";
 import type { CommonOptions, DiffFile } from "../core/types";
 import { buildStackRows, loadHighlightedDiff, type DiffRow, type RenderSpan } from "./diff/pierre";
