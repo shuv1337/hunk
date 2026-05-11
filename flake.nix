@@ -33,9 +33,37 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-      in {
-        default = pkgs.callPackage ./nix/package.nix {
+        hunk = pkgs.callPackage ./nix/package.nix {
           bun2nix = bun2nix.packages.${system}.default;
+        };
+      in {
+        inherit hunk;
+        default = hunk;
+      }
+    );
+
+    apps = forAllSystems (
+      system: let
+        pkgs = import nixpkgs {
+          inherit system;
+        };
+        updateBunLock = pkgs.writeShellScriptBin "hunk-update-bun-lock" ''
+          set -euo pipefail
+          ${bun2nix.packages.${system}.default}/bin/bun2nix -o nix/bun.lock.nix -c ../ "$@"
+          if [ -s nix/bun.lock.nix ] && [ "$(${pkgs.coreutils}/bin/tail -c 1 nix/bun.lock.nix)" != "" ]; then
+            printf '\n' >> nix/bun.lock.nix
+          fi
+        '';
+      in {
+        default = {
+          type = "app";
+          program = "${self.packages.${system}.hunk}/bin/hunk";
+          meta.description = "Run Hunk";
+        };
+        update-bun-lock = {
+          type = "app";
+          program = "${updateBunLock}/bin/hunk-update-bun-lock";
+          meta.description = "Regenerate nix/bun.lock.nix with the flake-pinned bun2nix";
         };
       }
     );
