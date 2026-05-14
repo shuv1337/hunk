@@ -10,6 +10,10 @@ All notable user-visible changes to Hunk are documented in this file.
 
 ### Fixed
 
+## [0.12.1] - 2026-05-14
+
+### Fixed
+
 - Included the bundled Hunk review skill in standalone prebuilt release archives so `hunk skill path` works after extracting a tarball or installing via Homebrew.
 
 ## [0.12.0] - 2026-05-12
@@ -314,7 +318,8 @@ All notable user-visible changes to Hunk are documented in this file.
 
 - Stabilized diff repainting, active-hunk scrolling, syntax highlighting, pager stdin patch handling, and terminal cleanup on exit.
 
-[Unreleased]: https://github.com/modem-dev/hunk/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/modem-dev/hunk/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/modem-dev/hunk/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/modem-dev/hunk/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/modem-dev/hunk/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/modem-dev/hunk/compare/v0.10.0...v0.11.0
