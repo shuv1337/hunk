@@ -14,7 +14,8 @@ function inlineNoteTitle(annotation: AgentAnnotation, noteIndex: number, noteCou
   }
 
   const source = reviewNoteSource(annotation);
-  const label = source === "user" ? "Your note" : source === "agent" ? "Agent note" : "AI note";
+  const author = annotation.author?.trim();
+  const label = source === "user" ? "Your note" : author ? `${author} note` : "Agent note";
   return noteCount > 1 ? `${label} ${noteIndex + 1}/${noteCount}` : label;
 }
 

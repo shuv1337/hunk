@@ -1339,7 +1339,7 @@ describe("UI components", () => {
 
     const lines = frame.split("\n");
     expect(lines[0]?.trimStart().startsWith("╭")).toBe(true);
-    expect(lines[0]).toContain("AI note - R2–R4");
+    expect(lines[0]).toContain("Agent note - R2–R4");
     expect(lines[0]).toContain("[x]");
     expect(lines[1]).toContain("│                                              │");
     expect(lines[2]).toContain("Summary line");
@@ -1433,13 +1433,13 @@ describe("UI components", () => {
       28,
     );
 
-    expect(frame).toContain("AI note - alpha.ts R2");
+    expect(frame).toContain("Agent note - alpha.ts R2");
     expect(frame).toContain("Annotation for alpha.ts");
     expect(frame).toContain("Why alpha.ts changed");
-    expect(frame.indexOf("AI note - alpha.ts R2")).toBeLessThan(
+    expect(frame.indexOf("Agent note - alpha.ts R2")).toBeLessThan(
       frame.indexOf("2 + export const add = true;"),
     );
-    expect(frame).toContain("AI note - beta.ts R1");
+    expect(frame).toContain("Agent note - beta.ts R1");
     expect(frame).toContain("Annotation for beta.ts");
     expect(frame).toContain("Why beta.ts changed");
     expect(frame).not.toContain("alpha.ts note");
@@ -1533,8 +1533,8 @@ describe("UI components", () => {
       24,
     );
 
-    expect(frame).toContain("AI note 1/2");
-    expect(frame).toContain("AI note 2/2");
+    expect(frame).toContain("Agent note 1/2");
+    expect(frame).toContain("Agent note 2/2");
     expect(frame).toContain("First note");
     expect(frame).toContain("First rationale.");
     expect(frame).toContain("Second note");
@@ -2047,11 +2047,11 @@ describe("UI components", () => {
     );
 
     expect(frame).not.toContain("@@ -1,1 +1,2 @@");
-    expect(frame).toContain("AI note - note-fallback.ts hunk");
+    expect(frame).toContain("Agent note - note-fallback.ts hunk");
     expect(frame).toContain("Ungrounded note");
     expect(frame).toContain("Falls back to the first visible");
     expect(frame).toContain("row.");
-    expect(frame.indexOf("AI note - note-fallback.ts hunk")).toBeLessThan(
+    expect(frame.indexOf("Agent note - note-fallback.ts hunk")).toBeLessThan(
       frame.indexOf("1 - export const value = 1;"),
     );
   });
