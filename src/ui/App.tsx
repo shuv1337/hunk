@@ -18,6 +18,7 @@ import {
   maxFileCodeLineWidth,
   resolveCodeViewportWidth,
 } from "./diff/codeColumns";
+import type { ActiveAddNoteAffordance } from "./diff/PierreDiffView";
 import { useAppKeyboardShortcuts } from "./hooks/useAppKeyboardShortcuts";
 import { useHunkSessionBridge } from "./hooks/useHunkSessionBridge";
 import { useMenuController } from "./hooks/useMenuController";
@@ -30,6 +31,7 @@ import { resizeSidebarWidth } from "./lib/sidebar";
 import { resolveTheme, THEMES } from "./themes";
 
 type FocusArea = "files" | "filter" | "note";
+type ActiveAddNoteTarget = ActiveAddNoteAffordance & { fileId: string };
 
 const FAST_CODE_HORIZONTAL_SCROLL_COLUMNS = 8;
 
@@ -119,6 +121,7 @@ export function App({
   const [forceSidebarOpen, setForceSidebarOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [focusArea, setFocusArea] = useState<FocusArea>("files");
+  const [activeAddNoteTarget, setActiveAddNoteTarget] = useState<ActiveAddNoteTarget | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(34);
   const [resizeDragOriginX, setResizeDragOriginX] = useState<number | null>(null);
   const [resizeStartWidth, setResizeStartWidth] = useState<number | null>(null);
@@ -518,12 +521,18 @@ export function App({
   /** Start a user-authored inline note and move keyboard focus into it. */
   const startUserNote = useCallback(
     (fileId?: string, hunkIndex?: number, target?: UserNoteLineTarget) => {
-      const draft = review.startUserNote(fileId, hunkIndex, target);
+      const hoverTarget = fileId === undefined ? activeAddNoteTarget : null;
+      const draft = review.startUserNote(
+        fileId ?? hoverTarget?.fileId,
+        hunkIndex ?? hoverTarget?.hunkIndex,
+        target ?? hoverTarget?.target,
+      );
       if (draft) {
+        setActiveAddNoteTarget(null);
         setFocusArea("note");
       }
     },
-    [review.startUserNote],
+    [activeAddNoteTarget, review.startUserNote],
   );
 
   /** Mark the inline draft note textarea as the active keyboard input. */
@@ -819,6 +828,7 @@ export function App({
           theme={activeTheme}
           width={diffPaneWidth}
           onOpenAgentNotesAtHunk={openAgentNotesAtHunk}
+          onActiveAddNoteAffordanceChange={setActiveAddNoteTarget}
           onRemoveUserNote={review.removeUserNote}
           onSaveDraftNote={saveDraftNote}
           onStartUserNoteAtHunk={startUserNote}

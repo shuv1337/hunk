@@ -8,7 +8,7 @@ import type { DiffSectionGeometry } from "../lib/diffSectionGeometry";
 import { reviewRowId } from "../lib/ids";
 import type { AppTheme } from "../themes";
 import { findMaxLineNumber } from "./codeColumns";
-import { buildSplitRows, buildStackRows } from "./pierre";
+import { buildSplitRows, buildStackRows, type DiffRow } from "./pierre";
 import { plannedReviewRowVisible } from "./plannedReviewRows";
 import { buildReviewRenderPlan } from "./reviewRenderPlan";
 import { resolveVisiblePlannedRowWindow, type VisibleBodyBounds } from "./rowWindowing";
@@ -19,6 +19,40 @@ const EMPTY_ANNOTATED_HUNK_INDICES = new Set<number>();
 const EMPTY_VISIBLE_AGENT_NOTES: VisibleAgentNote[] = [];
 const ADD_NOTE_IDLE_HIDE_DELAY_MS = 2000;
 
+export interface ActiveAddNoteAffordance {
+  hunkIndex: number;
+  target?: UserNoteLineTarget;
+}
+
+/** Resolve the note insertion target represented by a visible add-note affordance. */
+function addNoteAffordanceForRow(row: DiffRow): ActiveAddNoteAffordance {
+  if (row.type === "split-line") {
+    return {
+      hunkIndex: row.hunkIndex,
+      target:
+        row.right.lineNumber !== undefined
+          ? { side: "new", line: row.right.lineNumber }
+          : row.left.lineNumber !== undefined
+            ? { side: "old", line: row.left.lineNumber }
+            : undefined,
+    };
+  }
+
+  if (row.type === "stack-line") {
+    return {
+      hunkIndex: row.hunkIndex,
+      target:
+        row.cell.newLineNumber !== undefined
+          ? { side: "new", line: row.cell.newLineNumber }
+          : row.cell.oldLineNumber !== undefined
+            ? { side: "old", line: row.cell.oldLineNumber }
+            : undefined,
+    };
+  }
+
+  return { hunkIndex: row.hunkIndex };
+}
+
 /** Render a file diff in split or stack mode, with inline agent notes inserted between diff rows. */
 export function PierreDiffView({
   annotatedHunkIndices = EMPTY_ANNOTATED_HUNK_INDICES,
@@ -27,6 +61,7 @@ export function PierreDiffView({
   layout,
   onHover,
   onOpenAgentNotesAtHunk,
+  onActiveAddNoteAffordanceChange,
   onStartUserNoteAtHunk,
   showLineNumbers = true,
   showHunkHeaders = true,
@@ -47,6 +82,7 @@ export function PierreDiffView({
   layout: Exclude<LayoutMode, "auto">;
   onHover?: () => void;
   onOpenAgentNotesAtHunk?: (hunkIndex: number) => void;
+  onActiveAddNoteAffordanceChange?: (affordance: ActiveAddNoteAffordance | null) => void;
   onStartUserNoteAtHunk?: (hunkIndex: number, target?: UserNoteLineTarget) => void;
   showLineNumbers?: boolean;
   showHunkHeaders?: boolean;
@@ -75,18 +111,21 @@ export function PierreDiffView({
   const clearHoveredRow = useCallback(() => {
     clearHoverIdleTimeout();
     setHoveredRowKey(null);
-  }, [clearHoverIdleTimeout]);
+    onActiveAddNoteAffordanceChange?.(null);
+  }, [clearHoverIdleTimeout, onActiveAddNoteAffordanceChange]);
 
   const activateHoveredRow = useCallback(
-    (rowKey: string) => {
+    (rowKey: string, affordance: ActiveAddNoteAffordance) => {
       setHoveredRowKey(rowKey);
+      onActiveAddNoteAffordanceChange?.(affordance);
       clearHoverIdleTimeout();
       hoverIdleTimeoutRef.current = setTimeout(() => {
         setHoveredRowKey((current) => (current === rowKey ? null : current));
+        onActiveAddNoteAffordanceChange?.(null);
         hoverIdleTimeoutRef.current = null;
       }, ADD_NOTE_IDLE_HIDE_DELAY_MS);
     },
-    [clearHoverIdleTimeout],
+    [clearHoverIdleTimeout, onActiveAddNoteAffordanceChange],
   );
 
   useEffect(() => {
@@ -237,7 +276,7 @@ export function PierreDiffView({
             style={{ width: "100%", flexDirection: "column" }}
             onMouseOver={() => {
               onHover?.();
-              activateHoveredRow(plannedRow.key);
+              activateHoveredRow(plannedRow.key, addNoteAffordanceForRow(plannedRow.row));
             }}
           >
             <DiffRowView
@@ -259,7 +298,7 @@ export function PierreDiffView({
               showAddNoteBadge={hoveredRowKey === plannedRow.key && Boolean(onStartUserNoteAtHunk)}
               onHoverRow={() => {
                 onHover?.();
-                activateHoveredRow(plannedRow.key);
+                activateHoveredRow(plannedRow.key, addNoteAffordanceForRow(plannedRow.row));
               }}
               onOpenAgentNotesAtHunk={onOpenAgentNotesAtHunk}
               onStartUserNoteAtHunk={onStartUserNoteAtHunk}

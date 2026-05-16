@@ -10,6 +10,7 @@ import {
   type RefObject,
 } from "react";
 import type { AgentAnnotation, DiffFile, LayoutMode } from "../../../core/types";
+import type { ActiveAddNoteAffordance } from "../../diff/PierreDiffView";
 import type { DraftReviewNote, UserNoteLineTarget } from "../../hooks/useReviewController";
 import {
   alwaysShowReviewNote,
@@ -157,6 +158,7 @@ export function DiffPane({
   theme,
   width,
   onOpenAgentNotesAtHunk,
+  onActiveAddNoteAffordanceChange,
   onRemoveUserNote,
   onSaveDraftNote,
   onStartUserNoteAtHunk,
@@ -194,6 +196,9 @@ export function DiffPane({
   theme: AppTheme;
   width: number;
   onOpenAgentNotesAtHunk: (fileId: string, hunkIndex: number) => void;
+  onActiveAddNoteAffordanceChange?: (
+    affordance: (ActiveAddNoteAffordance & { fileId: string }) | null,
+  ) => void;
   onRemoveUserNote?: (noteId: string) => void;
   onSaveDraftNote?: () => void;
   onStartUserNoteAtHunk?: (fileId: string, hunkIndex: number, target?: UserNoteLineTarget) => void;
@@ -1296,6 +1301,11 @@ export function DiffPane({
                         onOpenAgentNotesAtHunk(file.id, hunkIndex)
                       }
                       onHover={() => setHoveredFileId(file.id)}
+                      onActiveAddNoteAffordanceChange={(affordance) =>
+                        onActiveAddNoteAffordanceChange?.(
+                          affordance ? { ...affordance, fileId: file.id } : null,
+                        )
+                      }
                       onStartUserNoteAtHunk={(hunkIndex, target) =>
                         onStartUserNoteAtHunk?.(file.id, hunkIndex, target)
                       }

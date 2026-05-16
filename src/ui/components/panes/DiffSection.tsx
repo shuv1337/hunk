@@ -1,7 +1,7 @@
 import { memo } from "react";
 import type { DiffFile, LayoutMode } from "../../../core/types";
 import type { UserNoteLineTarget } from "../../hooks/useReviewController";
-import { PierreDiffView } from "../../diff/PierreDiffView";
+import { PierreDiffView, type ActiveAddNoteAffordance } from "../../diff/PierreDiffView";
 import type { VisibleBodyBounds } from "../../diff/rowWindowing";
 import type { DiffSectionGeometry } from "../../lib/diffSectionGeometry";
 import { getAnnotatedHunkIndices, type VisibleAgentNote } from "../../lib/agentAnnotations";
@@ -32,6 +32,7 @@ interface DiffSectionProps {
   onOpenAgentNotesAtHunk: (hunkIndex: number) => void;
   hoverActive?: boolean;
   onHover: () => void;
+  onActiveAddNoteAffordanceChange?: (affordance: ActiveAddNoteAffordance | null) => void;
   onStartUserNoteAtHunk?: (hunkIndex: number, target?: UserNoteLineTarget) => void;
   onSelect: () => void;
 }
@@ -59,6 +60,7 @@ function DiffSectionComponent({
   onOpenAgentNotesAtHunk,
   hoverActive = true,
   onHover,
+  onActiveAddNoteAffordanceChange,
   onStartUserNoteAtHunk,
   onSelect,
 }: DiffSectionProps) {
@@ -113,6 +115,7 @@ function DiffSectionComponent({
         hoverActive={hoverActive}
         onHover={onHover}
         onOpenAgentNotesAtHunk={onOpenAgentNotesAtHunk}
+        onActiveAddNoteAffordanceChange={onActiveAddNoteAffordanceChange}
         onStartUserNoteAtHunk={onStartUserNoteAtHunk}
         selectedHunkIndex={selectedHunkIndex}
         sectionGeometry={sectionGeometry}
