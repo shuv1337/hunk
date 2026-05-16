@@ -11,7 +11,9 @@ export interface VisibleAgentNote {
   draft?: {
     body: string;
     focused: boolean;
+    onBlur?: () => void;
     onCancel: () => void;
+    onFocus?: () => void;
     onInput: (value: string) => void;
     onSave: () => void;
   };

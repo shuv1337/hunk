@@ -125,7 +125,9 @@ export function AgentInlineNote({
   draft?: {
     body: string;
     focused: boolean;
+    onBlur?: () => void;
     onCancel: () => void;
+    onFocus?: () => void;
     onInput: (value: string) => void;
     onSave: () => void;
   };
@@ -141,6 +143,41 @@ export function AgentInlineNote({
   useEffect(() => {
     setDraftLineCountHint(draftLineCount(draft?.body ?? ""));
   }, [draft?.body]);
+
+  useLayoutEffect(() => {
+    if (!draft) {
+      return;
+    }
+
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      return;
+    }
+
+    const originalFocus = textarea.focus.bind(textarea);
+    const originalBlur = textarea.blur.bind(textarea);
+    let active = true;
+
+    textarea.focus = () => {
+      originalFocus();
+      if (active) {
+        draft.onFocus?.();
+      }
+    };
+
+    textarea.blur = () => {
+      originalBlur();
+      if (active) {
+        draft.onBlur?.();
+      }
+    };
+
+    return () => {
+      active = false;
+      textarea.focus = originalFocus;
+      textarea.blur = originalBlur;
+    };
+  }, [draft]);
 
   const draftVisibleRows = draft ? Math.max(draftLineCountHint, draftLineCount(draft.body)) : 0;
 

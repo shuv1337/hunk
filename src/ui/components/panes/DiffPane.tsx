@@ -142,6 +142,7 @@ export function DiffPane({
   selectedHunkIndex,
   scrollToNote = false,
   draftNote = null,
+  draftNoteFocused = false,
   separatorWidth,
   pagerMode = false,
   showAgentNotes,
@@ -160,7 +161,9 @@ export function DiffPane({
   onSaveDraftNote,
   onStartUserNoteAtHunk,
   onUpdateDraftNote,
+  onBlurDraftNote,
   onCancelDraftNote,
+  onFocusDraftNote,
   onScrollCodeHorizontally = () => {},
   onSelectFile,
   onViewportCenteredHunkChange,
@@ -176,6 +179,7 @@ export function DiffPane({
   selectedHunkIndex: number;
   scrollToNote?: boolean;
   draftNote?: DraftReviewNote | null;
+  draftNoteFocused?: boolean;
   separatorWidth: number;
   pagerMode?: boolean;
   showAgentNotes: boolean;
@@ -194,7 +198,9 @@ export function DiffPane({
   onSaveDraftNote?: () => void;
   onStartUserNoteAtHunk?: (fileId: string, hunkIndex: number, target?: UserNoteLineTarget) => void;
   onUpdateDraftNote?: (body: string) => void;
+  onBlurDraftNote?: () => void;
   onCancelDraftNote?: () => void;
+  onFocusDraftNote?: () => void;
   onScrollCodeHorizontally?: (delta: number) => void;
   onSelectFile: (fileId: string) => void;
   onViewportCenteredHunkChange?: (fileId: string, hunkIndex: number) => void;
@@ -303,8 +309,10 @@ export function DiffPane({
           editable: true,
           draft: {
             body: draftNote.body,
-            focused: true,
+            focused: draftNoteFocused,
+            onBlur: onBlurDraftNote,
             onCancel: onCancelDraftNote ?? (() => {}),
+            onFocus: onFocusDraftNote,
             onInput: onUpdateDraftNote ?? (() => {}),
             onSave: onSaveDraftNote ?? (() => {}),
           },
@@ -319,8 +327,11 @@ export function DiffPane({
     return next;
   }, [
     draftNote,
+    draftNoteFocused,
     files,
+    onBlurDraftNote,
     onCancelDraftNote,
+    onFocusDraftNote,
     onRemoveUserNote,
     onSaveDraftNote,
     onUpdateDraftNote,

@@ -17,6 +17,7 @@ All notable user-visible changes to Hunk are documented in this file.
 
 ### Fixed
 
+- Fixed draft note focus handling so app shortcuts resume after the note textarea blurs without discarding the draft.
 - Preserved the resolved auto theme across `--watch` refreshes instead of falling back to the default dark theme.
 - Included the bundled Hunk review skill in standalone prebuilt release archives so `hunk skill path` works after extracting a tarball or installing via Homebrew.
 

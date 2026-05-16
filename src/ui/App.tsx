@@ -526,6 +526,16 @@ export function App({
     [review.startUserNote],
   );
 
+  /** Mark the inline draft note textarea as the active keyboard input. */
+  const focusDraftNote = useCallback(() => {
+    setFocusArea("note");
+  }, []);
+
+  /** Return keyboard focus to review navigation when the draft textarea loses focus. */
+  const blurDraftNote = useCallback(() => {
+    setFocusArea((current) => (current === "note" ? "files" : current));
+  }, []);
+
   /** Save the active draft note and return focus to review navigation. */
   const saveDraftNote = useCallback(() => {
     review.saveDraftNote();
@@ -795,6 +805,7 @@ export function App({
           selectedHunkIndex={selectedHunkIndex}
           scrollToNote={review.scrollToNote}
           draftNote={review.draftNote}
+          draftNoteFocused={focusArea === "note"}
           separatorWidth={diffSeparatorWidth}
           showAgentNotes={showAgentNotes}
           showLineNumbers={showLineNumbers}
@@ -812,7 +823,9 @@ export function App({
           onSaveDraftNote={saveDraftNote}
           onStartUserNoteAtHunk={startUserNote}
           onUpdateDraftNote={review.updateDraftNote}
+          onBlurDraftNote={blurDraftNote}
           onCancelDraftNote={cancelDraftNote}
+          onFocusDraftNote={focusDraftNote}
           onScrollCodeHorizontally={(delta) => {
             scrollCodeHorizontally(delta * FAST_CODE_HORIZONTAL_SCROLL_COLUMNS);
           }}
