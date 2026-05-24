@@ -194,7 +194,15 @@ describe("ui helpers", () => {
       menus.theme
         .filter((entry): entry is Extract<MenuEntry, { kind: "item" }> => entry.kind === "item")
         .map((entry) => entry.label),
-    ).toEqual(["Graphite", "Midnight", "Paper", "Ember", "Catppuccin Latte", "Catppuccin Mocha"]);
+    ).toEqual([
+      "Graphite",
+      "Midnight",
+      "Paper",
+      "Ember",
+      "Catppuccin Latte",
+      "Catppuccin Mocha",
+      "Night Owl",
+    ]);
     expect(
       menus.theme.some(
         (entry) => entry.kind === "item" && entry.label === "Graphite" && entry.checked,
@@ -248,6 +256,7 @@ describe("ui helpers", () => {
       "Ember",
       "Catppuccin Latte",
       "Catppuccin Mocha",
+      "Night Owl",
       "My Theme",
     ]);
     expect(

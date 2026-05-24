@@ -4,6 +4,7 @@ import { CATPPUCCIN_LATTE_THEME, CATPPUCCIN_MOCHA_THEME } from "./themes/catppuc
 import { EMBER_THEME } from "./themes/ember";
 import { GRAPHITE_THEME } from "./themes/graphite";
 import { MIDNIGHT_THEME } from "./themes/midnight";
+import { NIGHT_OWL_THEME } from "./themes/night-owl";
 import { PAPER_THEME } from "./themes/paper";
 import { withLazySyntaxStyle } from "./themes/syntax";
 import type { AppTheme, ThemeBase } from "./themes/types";
@@ -18,6 +19,7 @@ export const THEMES: AppTheme[] = [
   EMBER_THEME,
   CATPPUCCIN_LATTE_THEME,
   CATPPUCCIN_MOCHA_THEME,
+  NIGHT_OWL_THEME,
 ];
 
 /** Return the built-in theme by id so config-defined themes can inherit from it. */
